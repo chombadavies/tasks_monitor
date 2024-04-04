@@ -2,32 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Task;
 use App\Models\User;
 use Illuminate\Http\Request;
 
-
-class TasksController extends Controller
+class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-    
-        $tasks = Task::all();
+        $users = User::all();
         
-        return response()->json($tasks);
+        return response()->json($users);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request)
-
+    public function create()
     {
-
-    
+        //
     }
 
     /**
@@ -35,15 +30,13 @@ class TasksController extends Controller
      */
     public function store(Request $request)
     {
-        $data=$request->all();
-        $task=Task::create($data);
-        return $task;
+        //
     }
 
     /**
      * Display the specified resource.
      */
-    public function show()
+    public function show(string $id)
     {
         //
     }
@@ -51,7 +44,7 @@ class TasksController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit()
+    public function edit(string $id)
     {
         //
     }
@@ -59,7 +52,7 @@ class TasksController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update()
+    public function update(Request $request, string $id)
     {
         //
     }
@@ -67,22 +60,8 @@ class TasksController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Task $tasks)
+    public function destroy(string $id)
     {
         //
     }
-
-    public function users(){
-        $users = User::all();
-        
-        return response()->json($users);
-    }
-
-public function assignTasks(Request $request){
-    $user = $request->user(); 
-    $tasks = $user->tasks()->get(); 
-    
-    return response()->json($tasks);
-}
-
 }

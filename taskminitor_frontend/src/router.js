@@ -1,8 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import HomePage from './components/HomePage.vue'; // Adjust the import paths as necessary
-import LoginPage from './components/LoginPage.vue'; // Adjust the import paths as necessary
-import AdminTasksPage from './components/AdminViewTasks.vue'; // Adjust the import paths as necessary
-import UserTasksPage from './components/UserViewAssignedTask.vue'; // Adjust the import paths as necessary
+import HomePage from './components/HomePage.vue'; 
+import LoginPage from './components/LoginPage.vue'; 
+import AdminTasksPage from './components/AdminViewTasks.vue';
+import UserTasksPage from './components/UserViewAssignedTask.vue'; 
+import CreateTaskForm from './components/CreateTaskForm.vue'; 
 
 const routes = [
   {
@@ -19,14 +20,19 @@ const routes = [
     path: '/admin/tasks',
     name: 'AdminTasks',
     component: AdminTasksPage,
-    meta: { requiresAuth: true, isAdmin: true } // Add meta information for authentication and authorization
+    meta: { requiresAuth: true, isAdmin: true } 
   },
   {
     path: '/user/tasks',
     name: 'UserTasks',
     component: UserTasksPage,
-    meta: { requiresAuth: true } // Add meta information for authentication
+    meta: { requiresAuth: true }
   },
+  {
+    path: '/create-task',
+    name: 'CreateTask',
+    component: CreateTaskForm
+  }
 ];
 
 const router = createRouter({

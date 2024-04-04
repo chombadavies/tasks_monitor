@@ -32,15 +32,17 @@ methods: {
   async login() {
     try {
       const response = await axios.post('http://127.0.0.1:8000/api/login', this.credentials);
+      console.log(response)
+
       console.log('Login successful:', response.data);
-      
-      // Check the user's role from the response
-      const role = response.data.role;
-      
-      // Redirect the user based on their role
-      if (role === 1) { // Admin
+
+      const role = response.data.role.id;
+
+      if (role === 1) {
         this.$router.push('/admin/tasks');
-      } else if (role === 2) { // Regular User
+
+        
+      } else if (role === 2) { 
         this.$router.push('/my/tasks');
       } else {
         // Handle other roles or cases if needed
