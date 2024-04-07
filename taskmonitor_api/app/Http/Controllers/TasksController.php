@@ -14,7 +14,7 @@ class TasksController extends Controller
      */
     public function index()
     {
-    
+     
         $tasks = Task::all();
         
         return response()->json($tasks);
@@ -59,17 +59,22 @@ class TasksController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update()
+    public function update(Request $request,$id)
     {
-        //
+        $task=Task::findOrFail($id);
+        $data=$request->all();
+        $task->fill($data)->save();
+        return response()->json(['message' => 'Task updated successfully'], 200);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Task $tasks)
+    public function destroy($id)
     {
-        //
+        $task=Task::findOrFail($id);
+        $task->delete();
+        return response()->json(['message' => 'Task deleted successfully'], 200);
     }
 
     public function users(){
@@ -78,11 +83,33 @@ class TasksController extends Controller
         return response()->json($users);
     }
 
-public function assignTasks(Request $request){
-    $user = $request->user(); 
-    $tasks = $user->tasks()->get(); 
+public function assign(Request $request, $id)
+{
+    $task = Task::findOrFail($id);
     
+    $userId = $request->input('user_id');
+    
+    $task->user_id = $userId;
+    $task->save();
+    
+    return response()->json(['message' => 'Task assigned successfully'], 200);
+}
+
+public function userTasks(){
+    
+
+    return "we are here";
+    $user = auth()->user();
+if ($user) {
+    $tasks = $user->tasks()->get();
     return response()->json($tasks);
+} else {
+    
+    return response()->json(['error' => 'User not authenticated'], 401);
+}
+
+
+
 }
 
 }

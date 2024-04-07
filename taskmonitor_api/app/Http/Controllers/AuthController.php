@@ -8,6 +8,7 @@ use Laravel\Sanctum\PersonalAccessTokenResult;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
+
 class AuthController extends Controller
 {
     public function login(Request $request)
@@ -22,21 +23,30 @@ class AuthController extends Controller
             return response()->json($validator->errors(), 400);
         }
     
-        // Attempt to authenticate user
+       
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             $user = Auth::user();
-            // Create token and get plain text token
-            $tokenResult = $user->createToken('MyApp');
-            $plainTextToken = $tokenResult->plainTextToken; // This is the token string
+            
+            $tokenResult = $user->createToken('taskMonitor');
+            $plainTextToken = $tokenResult->plainTextToken; 
     
             return response()->json([
-                'token' => $plainTextToken, // Return just the token string
+                'token' => $plainTextToken, 
                 'role' => $user->role
             ], 200);
         }
     
-        // Authentication failed
+       
         return response()->json(['error' => 'Unauthorized'], 401);
+    }
+
+    public function logout(Request $request)
+    {
+        $user = $request->user();
+        $user->tokens()->delete(); 
+
+    
+        return response()->json(['message' => 'Successfully logged out'], 200);
     }
     
     }

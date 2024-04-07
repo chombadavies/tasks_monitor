@@ -22,7 +22,7 @@ class UserSeeder extends Seeder
             'password' => bcrypt('password'),
             'remember_token' => Str::random(10),
         ]);
-
+       
         User::create([
             'name' => 'David',
             'email' => 'david@user.com',

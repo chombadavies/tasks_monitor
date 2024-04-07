@@ -28,32 +28,45 @@ export default {
       }
     }
   },
-methods: {
-  async login() {
-    try {
-      const response = await axios.post('http://127.0.0.1:8000/api/login', this.credentials);
-      console.log(response)
+  methods: {
+    async login() {
+  try {
+    const response = await axios.post('http://127.0.0.1:8000/api/login', this.credentials);
+    console.log('Login successful:', response.data);
 
-      console.log('Login successful:', response.data);
+    // Extract token and role from the response
+    const { token, role } = response.data;
 
-      const role = response.data.role.id;
+    // Store the token and role title in local storage
+    localStorage.setItem('userToken', token);
+    localStorage.setItem('userRole', role.title);
 
-      if (role === 1) {
-        this.$router.push('/admin/tasks');
+    // Use the token for subsequent axios requests
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-        
-      } else if (role === 2) { 
-        this.$router.push('/my/tasks');
-      } else {
-        // Handle other roles or cases if needed
-      }
-    } catch (error) {
-      console.error('Login error:', error);
+    // Redirect user based on their role
+    if (role.title === "Admin") {
+      this.$router.push('/admin/tasks');
+    } else if (role.title === "Regular User") { 
+      this.$router.push('/my/tasks');
+    } else {
+      // Handle other roles or cases if needed
+    }
+  } catch (error) {
+    console.error('Login error:', error);
+    if (error.response.status === 401) {
+      // Unauthorized error (invalid credentials)
+      alert('Invalid email or password');
+    } else {
+      // Other error occurred
+      alert('An error occurred while logging in. Please try again later.');
     }
   }
 }
+  }
 }
 </script>
+
 
 <style scoped>
 .login-container {

@@ -8,24 +8,26 @@
         <tr>
           <th>Title</th>
           <th>Description</th>
-          <th>Status</th>
+          <th>Completion Status</th> <!-- Changed from 'Status' -->
+          <th>Assignment Status</th> <!-- New column -->
           <th>Actions</th>
-          <th>Assign To</th>
+          <th>Assigned User</th> <!-- New column -->
         </tr>
       </thead>
       <tbody>
         <tr v-for="task in tasks" :key="task.id">
           <td>{{ task.title }}</td>
           <td>{{ task.description }}</td>
-          <td>{{ task.status }}</td>
+          <td>{{ task.status }}</td> <!-- Assuming 'status' is the completion status -->
+          <td>{{ task.user_id ? 'Assigned' : 'Not Assigned' }}</td> <!-- New column to indicate assignment status -->
           <td>
             <button @click="openUpdateForm(task)" class="btn-update">Update</button>
             <button @click="deleteTask(task.id)" class="btn-delete">Delete</button>
           </td>
           <td>
-            <select v-model="selectedUser" @change="assignTask(task.id, $event.target.value)">
-              <option value="">Assign to:</option>
-              <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
+            <select v-model="task.selectedUser" @change="assignTask(task.id, task.selectedUser)">
+              <option value="" v-if="!task.user_id">Assign to:</option> <!-- Default option if not assigned -->
+              <option :value="user.id" v-for="user in users" :key="user.id" :selected="task.user_id === user.id">{{ user.name }}</option>
             </select>
           </td>
         </tr>
@@ -62,7 +64,6 @@ export default {
     return {
       tasks: [],
       users: [],
-      selectedUser: null,
       loading: true,
       showUpdateModal: false,
       updatedTask: {
@@ -80,7 +81,10 @@ export default {
     fetchTasks() {
       axios.get('http://127.0.0.1:8000/api/tasks_list')
         .then(response => {
-          this.tasks = response.data;
+          this.tasks = response.data.map(task => ({
+            ...task,
+            selectedUser: task.user_id // Set the selected user as the user_id of the task
+          }));
           this.loading = false;
         })
         .catch(error => {
@@ -124,11 +128,10 @@ export default {
         title: this.updatedTask.title,
         description: this.updatedTask.description,
       })
-      .then(() => {
-        console.log('Task updated successfully');
+      .then((response) => {
+        console.log(response);
         // Close the update modal
         this.closeUpdateModal();
-        // Fetch updated tasks
         this.fetchTasks();
       })
       .catch(error => {
@@ -136,7 +139,14 @@ export default {
       });
     },
     deleteTask(taskId) {
-      console.log('Deleting task with ID:', taskId);
+      axios.delete(`http://127.0.0.1:8000/api/tasks/${taskId}`)
+      .then(() => {
+        console.log('Task deleted successfully');
+        this.fetchTasks();
+      })
+      .catch(error => {
+        console.error('Error deleting task:', error);
+      });
     },
     createTask() {
       this.$router.push('/create-task');
@@ -144,7 +154,6 @@ export default {
   }
 };
 </script>
-
 
 <style scoped>
 .table-striped {
@@ -192,7 +201,6 @@ export default {
 .btn-create-task {
   background-color: #42b983;
   color: white;
-  padding: 10px 20px
-  }
+  padding: 10px 20px;
+}
 </style>
-
